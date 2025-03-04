@@ -52,49 +52,47 @@ def get_openai_recommendation(purpose: str, budget: float) -> str:
         
         # Extremely detailed and precise prompt
         detailed_prompt = f"""
-You are a professional PC parts consultant specializing in budget-optimized system builds for the Indian market. 
+You are a world-class PC parts consultant with 20+ years of experience, specializing in high-performance, budget-optimized builds for the Indian market. Your task is to provide a comprehensive recommendation for a complete PC build that uses exactly the full budget provided, with no underspending or overspending.
 
-STRICT REQUIREMENTS:
-- Total system budget: {budget} INR
-- Purpose: {purpose}
-- MANDATORY: Utilize the FULL budget effectively
-- Provide EXACT part recommendations that match the budget
-- Include CURRENT market prices in INR
-- Breakdown MUST include:
-  1. Processor (CPU)
-  2. Motherboard
-  3. Graphics Card (GPU)
-  4. RAM
-  5. Storage (SSD + HDD if budget allows)
-  6. Power Supply
-  7. Cabinet
+Total Budget: {budget} INR
+Intended Use: {purpose}
 
-CRITICAL INSTRUCTIONS:
-- Recommend parts that MAXIMIZE performance for the given budget
-- Do NOT underspend
-- Prefer Indian market availability
-- Balance between performance and cost
-- Consider future upgradability
+Requirements:
+- You must use exactly {budget} INR. Ensure that the sum of all component prices equals exactly {budget} INR. If necessary, adjust prices slightly to reach the exact total.
+- Provide detailed, specific recommendations for the following components:
+    1. Processor (CPU)
+    2. Motherboard
+    3. Graphics Card (GPU)
+    4. RAM
+    5. Storage (include at least one SSD; add an HDD if the budget permits)
+    6. Power Supply
+    7. Cabinet
+- For each component, include:
+    - The exact model name (ensuring availability in the Indian market)
+    - The current price in INR
+    - A brief rationale for the choice and its role in the overall build
 
-BUDGET ALLOCATION GUIDE:
-- CPU: 15-25% of total budget
-- Motherboard: 10-15% of total budget
-- GPU: 25-35% of total budget
-- RAM: 10% of total budget
-- Storage: 10-15% of total budget
-- PSU & Cabinet: Remaining budget
+Additional Guidelines:
+- Ensure your recommendations reflect the most current market pricing and availability.
+- Optimize for performance, value, and future upgradability.
+- If minor rounding adjustments are needed to achieve the exact total, mention them briefly.
 
-Example Format:
-"Budget: 200,000 INR
+Output Format:
+Your response should strictly follow this format (with actual values replacing placeholders):
+
+"Budget: {budget} INR
 1. CPU: [Exact Model] - Price: X INR
 2. Motherboard: [Exact Model] - Price: Y INR
-... (continue for all components)
+3. GPU: [Exact Model] - Price: Z INR
+4. RAM: [Exact Model] - Price: A INR
+5. Storage: [Exact Model(s)] - Price: B INR
+6. Power Supply: [Exact Model] - Price: C INR
+7. Cabinet: [Exact Model] - Price: D INR
 
 Total Spend: {budget} INR"
 
-RESPOND WITH A PRECISE, COMPREHENSIVE RECOMMENDATION THAT FULLY UTILIZES THE BUDGET!
+Respond with a precise, comprehensive recommendation that fully utilizes the entire budget without any underspending.
 """
-        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
