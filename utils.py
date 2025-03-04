@@ -3,7 +3,7 @@ import requests
 from typing import List, Dict
 import streamlit as st
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 import pandas as pd
 
 # Load environment variables
@@ -47,17 +47,20 @@ def get_openai_recommendation(purpose: str, budget: float) -> str:
         str: Recommendation string
     """
     try:
-        openai.api_key = os.getenv('OPENAI_API_KEY')
+        # Initialize OpenAI client with just the API key
+        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a PC parts expert who helps users find the best components."},
-                {"role": "user", "content": f"Recommend PC parts for {purpose} with a budget of {budget} INR. Focus on key components like CPU, GPU, RAM, and storage."}
-            ]
+                {"role": "user", "content": f"Recommend PC parts for {purpose} with a budget of {budget} INR. Provide specific component recommendations. Focus on key components like CPU, GPU, RAM, and storage. Give a detailed breakdown of recommended parts and their approximate costs."}
+            ],
+            max_tokens=300
         )
         
-        return response.choices[0].message.content
+        # Access the content differently in the new API
+        return response.choices[0].message.content or "No recommendation generated."
     except Exception as e:
         st.error(f"OpenAI API error: {e}")
         return "Unable to generate recommendations at this time."
