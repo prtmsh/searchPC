@@ -37,30 +37,78 @@ def validate_inputs(budget: float, purpose: str, location: str) -> bool:
 
 def get_openai_recommendation(purpose: str, budget: float) -> str:
     """
-    Use OpenAI to generate initial PC parts recommendation.
+    Use OpenAI to generate precise PC parts recommendation based on budget.
     
     Args:
         purpose (str): Intended use of PC
-        budget (float): User's budget
+        budget (float): User's budget in INR
     
     Returns:
-        str: Recommendation string
+        str: Detailed recommendation string
     """
     try:
         # Initialize OpenAI client with just the API key
         client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
+        # Extremely detailed and precise prompt
+        detailed_prompt = f"""
+You are a professional PC parts consultant specializing in budget-optimized system builds for the Indian market. 
+
+STRICT REQUIREMENTS:
+- Total system budget: {budget} INR
+- Purpose: {purpose}
+- MANDATORY: Utilize the FULL budget effectively
+- Provide EXACT part recommendations that match the budget
+- Include CURRENT market prices in INR
+- Breakdown MUST include:
+  1. Processor (CPU)
+  2. Motherboard
+  3. Graphics Card (GPU)
+  4. RAM
+  5. Storage (SSD + HDD if budget allows)
+  6. Power Supply
+  7. Cabinet
+
+CRITICAL INSTRUCTIONS:
+- Recommend parts that MAXIMIZE performance for the given budget
+- Do NOT underspend
+- Prefer Indian market availability
+- Balance between performance and cost
+- Consider future upgradability
+
+BUDGET ALLOCATION GUIDE:
+- CPU: 15-25% of total budget
+- Motherboard: 10-15% of total budget
+- GPU: 25-35% of total budget
+- RAM: 10% of total budget
+- Storage: 10-15% of total budget
+- PSU & Cabinet: Remaining budget
+
+Example Format:
+"Budget: 200,000 INR
+1. CPU: [Exact Model] - Price: X INR
+2. Motherboard: [Exact Model] - Price: Y INR
+... (continue for all components)
+
+Total Spend: {budget} INR"
+
+RESPOND WITH A PRECISE, COMPREHENSIVE RECOMMENDATION THAT FULLY UTILIZES THE BUDGET!
+"""
+        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a PC parts expert who helps users find the best components."},
-                {"role": "user", "content": f"Recommend PC parts for {purpose} with a budget of {budget} INR. Provide specific component recommendations. Focus on key components like CPU, GPU, RAM, and storage. Give a detailed breakdown of recommended parts and their approximate costs."}
+                {"role": "system", "content": "You are an expert PC parts consultant specialized in budget-optimized builds."},
+                {"role": "user", "content": detailed_prompt}
             ],
-            max_tokens=300
+            max_tokens=500,
+            temperature=0.7
         )
         
-        # Access the content differently in the new API
-        return response.choices[0].message.content or "No recommendation generated."
+        # Access the content 
+        recommendation = response.choices[0].message.content or "No recommendation generated."
+        
+        return recommendation
     except Exception as e:
         st.error(f"OpenAI API error: {e}")
         return "Unable to generate recommendations at this time."
