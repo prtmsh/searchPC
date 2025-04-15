@@ -1,11 +1,11 @@
 import os
 import requests
 from typing import List, Dict
-import streamlit as st
+from django.contrib import messages
 from dotenv import load_dotenv
 import google.generativeai as genai
-import pandas as pd
 import re
+from .models import SearchLog
 
 # Load environment variables
 load_dotenv()
@@ -13,7 +13,7 @@ load_dotenv()
 # Configure Gemini API
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
-def validate_inputs(budget: float, purpose: str, location: str) -> bool:
+def validate_inputs(budget: float, purpose: str, location: str, request=None) -> bool:
     """
     Validate user inputs for PC parts search.
     
@@ -21,20 +21,24 @@ def validate_inputs(budget: float, purpose: str, location: str) -> bool:
         budget (float): User's budget
         purpose (str): Intended use of PC
         location (str): User's location
+        request: Django request for messages
     
     Returns:
         bool: Whether inputs are valid
     """
     if not budget or budget <= 0:
-        st.error("Please enter a valid budget.")
+        if request:
+            messages.error(request, "Please enter a valid budget.")
         return False
     
     if not purpose or len(purpose.strip()) < 2:
-        st.error("Please specify the PC's purpose.")
+        if request:
+            messages.error(request, "Please specify the PC's purpose.")
         return False
     
     if not location or len(location.strip()) < 2:
-        st.error("Please specify your location.")
+        if request:
+            messages.error(request, "Please specify your location.")
         return False
     
     return True
@@ -105,8 +109,7 @@ Respond with a precise, comprehensive recommendation that fully utilizes the ent
         
         return recommendation
     except Exception as e:
-        st.error(f"Gemini API error: {e}")
-        return "Unable to generate recommendations at this time."
+        return f"Unable to generate recommendations at this time. Error: {e}"
 
 def parse_gemini_recommendation(recommendation_text: str) -> Dict[str, str]:
     """
@@ -150,7 +153,7 @@ def parse_gemini_recommendation(recommendation_text: str) -> Dict[str, str]:
 
 def log_search(purpose: str, budget: float, location: str):
     """
-    Log user search details (optional implementation for analytics).
+    Log user search to database
     
     Args:
         purpose (str): Intended use of PC
@@ -158,18 +161,98 @@ def log_search(purpose: str, budget: float, location: str):
         location (str): User's location
     """
     try:
-        log_df = pd.DataFrame({
-            'Timestamp': [pd.Timestamp.now()],
-            'Purpose': [purpose],
-            'Budget': [budget],
-            'Location': [location]
-        })
+        SearchLog.objects.create(
+            purpose=purpose,
+            budget=budget,
+            location=location
+        )
+        return True
+    except Exception:
+        return False
+
+class PCPartsFinder:
+    def __init__(self):
+        """
+        Initialize PCPartsFinder with Serper.dev API key.
+        """
+        self.serper_api_key = os.getenv('SERPER_API_KEY')
+        if not self.serper_api_key:
+            raise ValueError("Serper API key not found. Please set SERPER_API_KEY in .env")
+
+    def search_pc_parts(self, query: str, location: str) -> List[Dict]:
+        """
+        Search for PC parts using Serper.dev API.
         
-        # Append to a CSV file (create if not exists)
-        log_file = 'search_logs.csv'
-        if os.path.exists(log_file):
-            log_df.to_csv(log_file, mode='a', header=False, index=False)
-        else:
-            log_df.to_csv(log_file, index=False)
-    except Exception as e:
-        st.warning(f"Could not log search: {e}")
+        Args:
+            query (str): Search query for PC parts
+            location (str): Location for localized search results
+        
+        Returns:
+            List[Dict]: List of PC part search results
+        """
+        url = "https://google.serper.dev/shopping"
+        
+        payload = {
+            "q": query + " price India",  # Add pricing and location context
+            "gl": "in",  # Default to India
+            "hl": "en"
+        }
+        
+        headers = {
+            'X-API-KEY': self.serper_api_key,
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            data = response.json()
+            shopping_results = data.get('shopping', [])
+            
+            # Process and filter results
+            processed_results = []
+            for item in shopping_results[:10]:  # Limit to 10 results
+                processed_item = {
+                    'title': item.get('title', 'No Title'),
+                    'price': item.get('price', 'Price Not Available'),
+                    'source': item.get('source', 'Unknown'),
+                    'link': item.get('link', '#')
+                }
+                processed_results.append(processed_item)
+            
+            return processed_results
+        
+        except requests.RequestException as e:
+            return []
+
+    def get_part_recommendations(self, purpose: str, budget: float, location: str) -> Dict:
+        """
+        Generate comprehensive PC part recommendations.
+        
+        Args:
+            purpose (str): Intended PC use
+            budget (float): Total budget
+            location (str): User's location
+        
+        Returns:
+            Dict: Comprehensive part recommendations
+        """
+        # Get AI recommendation
+        ai_recommendation_text = get_gemini_recommendation(purpose, budget)
+        
+        # Parse the recommendation into component parts
+        components = parse_gemini_recommendation(ai_recommendation_text)
+        
+        # Search for each specific component
+        recommendations = {}
+        
+        for category, model in components.items():
+            if model:  # Only search if we have a specific model
+                results = self.search_pc_parts(model, location)
+                recommendations[category] = results
+        
+        return {
+            'ai_recommendation': ai_recommendation_text,
+            'part_recommendations': recommendations
+        }
