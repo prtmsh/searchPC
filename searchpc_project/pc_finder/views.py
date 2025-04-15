@@ -86,7 +86,8 @@ class ResultsView(LoginRequiredMixin, View):
             recommendations = parts_finder.get_part_recommendations(
                 search_params['purpose'],
                 search_params['budget'],
-                search_params['location']
+                search_params['location'],
+                search_params.get('preferred_brands', [])  # Pass preferred brands with empty list as default
             )
             
             # Parse components for better display
