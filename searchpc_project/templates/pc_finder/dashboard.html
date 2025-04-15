@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - PC Parts Finder{% endblock %}
+
+{% block content %}
+<div class="col-lg-3">
+    <div class="sidebar p-3 mb-3">
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-2">
+                <i class="bi bi-person-circle text-primary"></i>
+            </div>
+            <div>
+                <h5 class="h6 mb-0">{{ user.email }}</h5>
+                <p class="text-muted small mb-0">Account Dashboard</p>
+            </div>
+        </div>
+        
+        <div class="list-group list-group-flush mb-4">
+            <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 active">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+            <a href="{% url 'home' %}" class="list-group-item list-group-item-action border-0 px-0">
+                <i class="bi bi-search me-2"></i> New Search
+            </a>
+        </div>
+        
+        <div class="card bg-primary bg-opacity-10 border-0">
+            <div class="card-body p-3">
+                <h6 class="card-title mb-3 text-primary"><i class="bi bi-lightning-charge"></i> Quick Stats</h6>
+                <div class="mb-2 d-flex justify-content-between">
+                    <span class="text-muted small">Total Searches:</span>
+                    <span class="fw-bold">{{ total_searches }}</span>
+                </div>
+                
+                {% if popular_purpose %}
+                <div class="mb-2 d-flex justify-content-between">
+                    <span class="text-muted small">Popular Purpose:</span>
+                    <span class="fw-bold">{{ popular_purpose.name }}</span>
+                </div>
+                {% endif %}
+                
+                {% if avg_budget %}
+                <div class="mb-2 d-flex justify-content-between">
+                    <span class="text-muted small">Avg. Budget:</span>
+                    <span class="fw-bold">{{ avg_budget|floatformat:0 }} INR</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-9">
+    {% if messages %}
+    <div class="messages mb-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show py-2">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="card main-content mb-3">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-3">
+                <div>
+                    <h4 class="h5 mb-0">Recent Searches</h4>
+                    <p class="text-muted small mb-0">View your search history</p>
+                </div>
+                <div class="ms-auto">
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-search"></i> New Search
+                    </a>
+                </div>
+            </div>
+
+            {% if searches %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Purpose</th>
+                            <th>Budget</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for search in searches %}
+                        <tr>
+                            <td>{{ search.timestamp|date:"M d, Y" }}</td>
+                            <td><span class="badge bg-secondary">{{ search.purpose }}</span></td>
+                            <td>{{ search.budget|floatformat:0 }} INR</td>
+                            <td>{{ search.location }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <nav aria-label="Search pagination">
+                <ul class="pagination pagination-sm justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-search text-muted mb-2" style="font-size: 2.5rem;"></i>
+                <p class="mb-0">No search history found.</p>
+                <p class="text-muted small">Start by making your first search!</p>
+                <a href="{% url 'home' %}" class="btn btn-primary btn-sm mt-2">
+                    <i class="bi bi-search"></i> Start Searching
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,12 +3,13 @@ from django.views import View
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
 
 from .forms import PCSearchForm
 from .auth_forms import CustomUserCreationForm, CustomAuthenticationForm
 from .utils import validate_inputs, log_search, PCPartsFinder, parse_gemini_recommendation
+from .models import SearchLog
 
 class SignUpView(CreateView):
     """User registration view"""
@@ -105,3 +106,40 @@ class ResultsView(LoginRequiredMixin, View):
         except Exception as e:
             messages.error(request, f"An error occurred while retrieving results: {e}")
             return redirect('home')
+
+class DashboardView(LoginRequiredMixin, ListView):
+    """User dashboard with search history"""
+    template_name = 'pc_finder/dashboard.html'
+    model = SearchLog
+    context_object_name = 'searches'
+    paginate_by = 10
+    ordering = ['-timestamp']
+    
+    def get_queryset(self):
+        # Filter search logs for current user (could be updated when user-specific logs are implemented)
+        return SearchLog.objects.all().order_by('-timestamp')[:20]  # Limit to recent 20 searches
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_searches'] = SearchLog.objects.count()
+        
+        # Get popular purposes and budgets for insights
+        purposes = SearchLog.objects.values_list('purpose', flat=True)
+        purpose_counts = {}
+        for purpose in purposes:
+            if purpose in purpose_counts:
+                purpose_counts[purpose] += 1
+            else:
+                purpose_counts[purpose] = 1
+        
+        # Get most popular purpose
+        if purpose_counts:
+            most_popular = max(purpose_counts.items(), key=lambda x: x[1])
+            context['popular_purpose'] = {'name': most_popular[0], 'count': most_popular[1]}
+        
+        # Calculate average budget
+        budgets = SearchLog.objects.values_list('budget', flat=True)
+        if budgets:
+            context['avg_budget'] = sum(budgets) / len(budgets)
+        
+        return context
