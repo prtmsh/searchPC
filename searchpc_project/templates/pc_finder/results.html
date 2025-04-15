@@ -6,34 +6,34 @@
 
 {% block content %}
 <div class="col-lg-3">
-    <div class="sidebar p-4 mb-4">
-        <h5 class="fw-bold mb-3"><i class="bi bi-search"></i> Your Search</h5>
+    <div class="sidebar p-3 mb-3">
+        <h5 class="mb-2 h6"><i class="bi bi-search"></i> Your Search</h5>
         <div class="list-group list-group-flush">
             <div class="list-group-item border-0 px-0 d-flex justify-content-between align-items-center">
-                <div><i class="bi bi-currency-rupee text-primary me-2"></i> Budget:</div>
+                <div><i class="bi bi-currency-rupee text-primary me-1"></i> Budget:</div>
                 <span class="badge bg-primary rounded-pill">{{ search_params.budget|floatformat:0 }} INR</span>
             </div>
             <div class="list-group-item border-0 px-0 d-flex justify-content-between align-items-center">
-                <div><i class="bi bi-gear text-primary me-2"></i> Purpose:</div>
+                <div><i class="bi bi-gear text-primary me-1"></i> Purpose:</div>
                 <span class="badge bg-secondary rounded-pill">{{ search_params.purpose }}</span>
             </div>
             <div class="list-group-item border-0 px-0 d-flex justify-content-between align-items-center">
-                <div><i class="bi bi-geo-alt text-primary me-2"></i> Location:</div>
-                <span>{{ search_params.location }}</span>
+                <div><i class="bi bi-geo-alt text-primary me-1"></i> Location:</div>
+                <span class="small">{{ search_params.location }}</span>
             </div>
             {% if search_params.preferred_brands %}
             <div class="list-group-item border-0 px-0">
-                <div class="mb-2"><i class="bi bi-tag text-primary me-2"></i> Preferred Brands:</div>
+                <div class="mb-1"><i class="bi bi-tag text-primary me-1"></i> Preferred:</div>
                 <div>
                     {% for brand in search_params.preferred_brands %}
-                    <span class="badge bg-light text-dark me-1 mb-1">{{ brand }}</span>
+                    <span class="badge bg-dark text-light me-1 mb-1">{{ brand }}</span>
                     {% endfor %}
                 </div>
             </div>
             {% endif %}
         </div>
-        <div class="mt-4">
-            <a href="{% url 'home' %}" class="btn btn-outline-primary w-100">
+        <div class="mt-3">
+            <a href="{% url 'home' %}" class="btn btn-outline-primary btn-sm w-100">
                 <i class="bi bi-arrow-left"></i> New Search
             </a>
         </div>
@@ -42,9 +42,9 @@
 
 <div class="col-lg-9">
     {% if messages %}
-    <div class="messages mb-4">
+    <div class="messages mb-3">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show py-2">
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -52,58 +52,55 @@
     </div>
     {% endif %}
 
-    <div class="card main-content mb-4">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center mb-4">
-                <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
-                    <i class="bi bi-check-circle text-success fs-3"></i>
+    <div class="card main-content mb-3">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-success bg-opacity-10 p-2 rounded-circle me-2">
+                    <i class="bi bi-check-circle text-success"></i>
                 </div>
                 <div>
-                    <h4 class="mb-1">PC Build Recommendation Ready!</h4>
-                    <p class="text-muted mb-0">Custom-tailored for your needs and budget</p>
+                    <h4 class="h5 mb-0">Build Recommendation</h4>
+                    <p class="text-muted small mb-0">Custom-tailored for your needs</p>
                 </div>
             </div>
             
-            <div class="mb-4">
-                <h5 class="card-title mb-3"><i class="bi bi-cpu text-primary me-2"></i>Complete Build Recommendation</h5>
-                <div class="card bg-light">
-                    <div class="card-body">
-                        <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ ai_recommendation }}</pre>
+            <div class="mb-3">
+                <div class="card bg-dark">
+                    <div class="card-body p-3">
+                        <pre class="mb-0">{{ ai_recommendation }}</pre>
                     </div>
                 </div>
             </div>
             
-            <h5 class="card-title mb-3"><i class="bi bi-shop text-primary me-2"></i>Where to Buy Components</h5>
+            <h5 class="card-title h6 mb-2"><i class="bi bi-shop text-primary me-1"></i>Where to Buy Components</h5>
             <div class="accordion" id="componentsAccordion">
                 {% for category, parts in part_recommendations.items %}
                 {% if parts %}
-                <div class="accordion-item mb-2 border">
+                <div class="accordion-item mb-2">
                     <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                        <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" 
                             data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" 
                             aria-controls="collapse{{ forloop.counter }}">
-                            <span class="fw-bold">{{ category }}</span>
-                            <span class="ms-2 text-muted">{{ components|get_item:category|default:"Not specified" }}</span>
+                            <span class="small fw-bold">{{ category }}</span>
+                            <span class="ms-2 text-muted small">{{ components|get_item:category|default:"Not specified" }}</span>
                         </button>
                     </h2>
                     <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" 
                         aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#componentsAccordion">
-                        <div class="accordion-body">
-                            <div class="row g-3">
+                        <div class="accordion-body py-2">
+                            <div class="row g-2">
                                 {% for part in parts %}
                                 <div class="col-md-6">
-                                    <div class="card component-card h-100 border-0 shadow-sm">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-truncate" data-bs-toggle="tooltip" title="{{ part.title }}">
+                                    <div class="card component-card h-100">
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title small text-truncate" data-bs-toggle="tooltip" title="{{ part.title }}">
                                                 {{ part.title }}
                                             </h6>
-                                            <p class="card-text mb-3">
-                                                <span class="d-block mb-1"><i class="bi bi-tag-fill text-primary me-1"></i> <strong>{{ part.price }}</strong></span>
+                                            <p class="card-text mb-2">
+                                                <span class="d-block small"><i class="bi bi-tag-fill text-primary me-1"></i> <strong>{{ part.price }}</strong></span>
                                                 <small class="text-muted"><i class="bi bi-shop me-1"></i> {{ part.source }}</small>
                                             </p>
-                                            <a href="{{ part.link }}" target="_blank" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-box-arrow-up-right"></i> View Details
-                                            </a>
+                                            <a href="{{ part.link }}" target="_blank" class="btn btn-sm btn-primary">View</a>
                                         </div>
                                     </div>
                                 </div>

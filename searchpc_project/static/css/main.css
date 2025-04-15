@@ -1,48 +1,77 @@
 :root {
-  --primary-color: #3a6ea5;
-  --secondary-color: #004e98;
+  /* Dark theme colors */
+  --primary-color: #4d8fcc;
+  --primary-dark: #326699;
+  --secondary-color: #4a89dc;
   --accent-color: #ff6700;
-  --light-bg: #f8f9fa;
-  --dark-text: #212529;
-  --light-text: #6c757d;
-  --border-radius: 8px;
-  --box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  --dark-bg: #121212;
+  --card-bg: #1e1e1e;
+  --input-bg: #2a2a2a;
+  --light-text: #e0e0e0;
+  --medium-text: #b0b0b0;
+  --dark-text: #808080;
+  --border-color: #333;
+  --border-radius: 6px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --success: #2e7d32;
+  --success-bg: rgba(46, 125, 50, 0.15);
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  color: var(--dark-text);
-  background-color: var(--light-bg);
-  padding-top: 2rem;
+  color: var(--light-text);
+  background-color: var(--dark-bg);
+  padding-top: 1.5rem;
+  font-size: 0.95rem;
 }
 
 .navbar {
-  background-color: white;
+  background-color: var(--card-bg);
   box-shadow: var(--box-shadow);
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
   font-weight: 600;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  color: var(--light-text);
 }
 
 .logo-icon {
   margin-right: 0.5rem;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   color: var(--accent-color);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1140px;
 }
 
 .card, .main-content, .sidebar {
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   border: none;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* Button styles */
+.btn {
+  font-size: 0.9rem;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.2s;
+}
+
+.btn-lg {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
 }
 
 .btn-primary {
@@ -51,9 +80,9 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: var(--secondary-color);
-  border-color: var(--secondary-color);
-  box-shadow: 0 5px 15px rgba(0, 78, 152, 0.2);
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-outline-primary {
@@ -64,109 +93,127 @@ body {
 .btn-outline-primary:hover {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
-  box-shadow: 0 5px 15px rgba(58, 110, 165, 0.15);
-}
-
-.btn {
-  transition: all 0.3s;
+  color: var(--light-text);
 }
 
 /* Form styles */
+.form-control, .form-select {
+  background-color: var(--input-bg);
+  border-color: var(--border-color);
+  color: var(--light-text);
+  font-size: 0.95rem;
+  padding: 0.375rem 0.75rem;
+}
+
 .form-control:focus, .form-select:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.25rem rgba(58, 110, 165, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(77, 143, 204, 0.25);
+  background-color: var(--input-bg);
+  color: var(--light-text);
 }
 
 .form-label {
   font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--medium-text);
+}
+
+/* Input group styling */
+.input-group-text {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--light-text);
 }
 
 /* Component card styles */
 .component-card {
   transition: transform 0.2s ease;
   height: 100%;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
 }
 
 .component-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .component-card .card-title {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-/* Card hover effects */
-.card.component-card {
-  transition: all 0.3s ease;
-}
-
-.card.component-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-/* Header styling */
-.site-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.site-tagline {
+  font-size: 0.95rem;
+  font-weight: 500;
   color: var(--light-text);
+}
+
+.component-card .card-body {
+  padding: 1rem;
 }
 
 /* Footer styling */
 .footer {
-  margin-top: 3rem;
-  padding: 2rem 0;
-  background-color: white;
-  box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.05);
-  border-top: 1px solid rgba(0,0,0,0.1);
+  margin-top: 2rem;
+  padding: 1.5rem 0;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+.footer a {
+  color: var(--primary-color);
 }
 
 /* Results page */
-.accordion-button:not(.collapsed) {
-  background-color: rgba(58, 110, 165, 0.08);
-  color: var(--primary-color);
-  font-weight: 500;
-}
-
-.accordion-button:focus {
-  box-shadow: 0 0 0 0.25rem rgba(58, 110, 165, 0.25);
-  border-color: rgba(58, 110, 165, 0.5);
+.accordion-item {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  margin-bottom: 0.25rem;
 }
 
 .accordion-button {
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--card-bg);
+  color: var(--light-text);
+  font-size: 0.95rem;
 }
 
-.accordion-item {
-  overflow: hidden;
-  border-radius: var(--border-radius);
-  margin-bottom: 0.5rem;
+.accordion-button:not(.collapsed) {
+  background-color: rgba(77, 143, 204, 0.1);
+  color: var(--primary-color);
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(77, 143, 204, 0.25);
+  border-color: var(--primary-dark);
+}
+
+.accordion-button::after {
+  filter: invert(1);
 }
 
 .badge {
   font-weight: 500;
+  font-size: 0.8rem;
+  padding: 0.35em 0.65em;
 }
 
 .sidebar .badge {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
 }
 
-/* Authentication pages */
-.auth-container {
-  max-width: 500px;
-  margin: 0 auto;
+/* Text and background colors */
+.text-muted {
+  color: var(--medium-text) !important;
 }
 
-.auth-card {
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-  border: none;
+.bg-light {
+  background-color: var(--input-bg) !important;
+}
+
+/* Pre-formatted text styles for AI recommendations */
+pre {
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--light-text);
 }
 
 /* Loading spinner */
@@ -176,7 +223,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(18, 18, 18, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -191,66 +238,83 @@ body {
   opacity: 1;
 }
 
-/* Pre-formatted text styles for AI recommendations */
-pre {
-  background: transparent;
-  font-family: inherit;
-  font-size: inherit;
-  line-height: 1.6;
-  color: inherit;
-}
-
-/* Page section spacing */
-.section {
-  padding: 4rem 0;
-}
-
-/* Cards with icons for feature highlights */
+/* Feature cards */
 .feature-card {
-  border: none;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  transition: transform 0.3s ease;
+  padding: 1rem;
   height: 100%;
+  transition: transform 0.3s;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
-.feature-icon {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem;
+/* Sidebar adjustments */
+.sidebar .list-group-item {
+  background-color: transparent;
+  padding: 0.5rem 0;
+}
+
+/* Form check for dark mode */
+.form-check-input {
+  background-color: var(--input-bg);
+  border-color: var(--border-color);
+}
+
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Success elements */
+.text-success {
+  color: #4caf50 !important;
+}
+
+.bg-success {
+  background-color: var(--success) !important;
+}
+
+/* Toast styling */
+.toast {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+.toast-body {
+  color: var(--light-text);
+}
+
+/* For checkboxes in dark mode */
+input[type="checkbox"] {
+  filter: invert(100%) hue-rotate(180deg) brightness(1.2);
+}
+
+/* Adjustments for login/signup forms */
+.auth-card {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .site-header {
-    text-align: center;
-    padding-bottom: 1rem;
-  }
-  
-  .auth-nav {
-    margin-top: 1rem;
-    text-align: center;
-  }
-
   .container {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
   
   .card-body {
     padding: 1rem;
   }
   
-  .auth-card {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  h1, .h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2, .h2 {
+    font-size: 1.5rem;
   }
 }
