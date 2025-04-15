@@ -25,10 +25,9 @@
                 <div class="fw-bold">Preferred Brands:</div>
                 <div>
                     {% for brand in search_params.preferred_brands %}
-                    <span class="badge bg-primary me-1">{{ brand }}</span>
+                    <span class="badge bg-secondary me-1">{{ brand }}</span>
                     {% endfor %}
                 </div>
-                <small class="text-muted mt-1 d-block">The AI will prioritize these brands when possible</small>
             </li>
             {% endif %}
         </ul>
