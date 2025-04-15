@@ -43,24 +43,36 @@ def validate_inputs(budget: float, purpose: str, location: str, request=None) ->
     
     return True
 
-def get_gemini_recommendation(purpose: str, budget: float) -> str:
+def get_gemini_recommendation(purpose: str, budget: float, preferred_brands: List[str] = None) -> str:
     """
     Use Gemini to generate precise PC parts recommendation based on budget.
     
     Args:
         purpose (str): Intended use of PC
         budget (float): User's budget in INR
+        preferred_brands (List[str]): List of preferred brands
     
     Returns:
         str: Detailed recommendation string
     """
     try:
+        # Prepare preferred brands text if any
+        brand_preference_text = ""
+        if preferred_brands and len(preferred_brands) > 0:
+            brand_preference_text = f"""
+Additional Brand Preferences:
+- Preferred brands: {', '.join(preferred_brands)}
+- When possible, prioritize components from these brands, but only if they provide good value and performance within the budget constraints.
+- If a preferred brand doesn't offer the best option for a particular component, feel free to recommend alternatives.
+"""
+
         # Extremely detailed and precise prompt
         detailed_prompt = f"""
 You are a world-class PC parts consultant with 20+ years of experience, specializing in high-performance, budget-optimized builds for the Indian market. Your task is to provide a comprehensive recommendation for a complete PC build that uses exactly the full budget provided, with no underspending or overspending.
 
 Total Budget: {budget} INR
 Intended Use: {purpose}
+{brand_preference_text}
 
 Requirements:
 - You must use exactly {budget} INR. Ensure that the sum of all component prices equals exactly {budget} INR. If necessary, adjust prices slightly to reach the exact total.
