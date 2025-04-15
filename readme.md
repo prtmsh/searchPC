@@ -1,11 +1,14 @@
 # searchPC
 
-searchPC is a Streamlit-based web application designed to help users find and configure the ideal PC components tailored to their needs and budget. The application combines AI-powered recommendations with live search results to suggest components—from CPUs to storage—that match your desired use-case, whether for gaming, programming, machine learning, or professional work.
+searchPC is a Django-based web application designed to help users find and configure the ideal PC components tailored to their needs and budget. The application combines AI-powered recommendations with live search results to suggest components—from CPUs to storage—that match your desired use-case, whether for gaming, programming, machine learning, or professional work.
 
 ## Features
 
+- **User Account System:**  
+  Create an account to save your search history and view personalized usage statistics.
+  
 - **User-Friendly Interface:**  
-  Build your custom PC by providing your budget, intended purpose, and location via an intuitive sidebar.
+  Build your custom PC by providing your budget, intended purpose, and location through an intuitive form.
   
 - **AI-Powered Recommendations:**  
   Leverages Google's Gemini Pro to generate a comprehensive PC build recommendation that utilizes the entire budget precisely. The recommendation includes detailed components such as CPU, motherboard, GPU, RAM, storage, power supply, and cabinet.
@@ -13,47 +16,36 @@ searchPC is a Streamlit-based web application designed to help users find and co
 - **Live Part Searches:**  
   Uses the [Serper.dev API](https://serper.dev/) to fetch up-to-date shopping results for various PC parts, ensuring recommendations are relevant to the current market.
   
-- **Search Logging:**  
-  User searches (budget, purpose, and location) are logged into a CSV file for analytics and debugging purposes.
+- **Search History Dashboard:**  
+  View all your past searches along with analytics like your most popular PC purpose and average budget.
 
-## File Structure
+## Project Structure
 
-- **app.py**  
-  The main Streamlit application that sets up the UI, handles user inputs, and displays both the AI recommendation and detailed part recommendations.
+- **Django Apps:**
+  - `pc_finder`: Main application with models, views, and forms for PC part recommendations
 
-- **parts_finder.py**  
-  Contains the `PCPartsFinder` class which:
-  - Validates API keys.
-  - Calls the Serper.dev API to search for PC parts.
-  - Integrates the AI recommendation into the part search process.
+- **Key Files:**
+  - `utils.py`: Contains AI integration and search functionality
+  - `models.py`: Database models for users and search logs
+  - `views.py`: View controllers for the application
+  - `forms.py`: Form definitions for search parameters
+  - `auth_forms.py`: User authentication forms
 
-- **utils.py**  
-  Provides helper functions for:
-  - Validating user inputs.
-  - Generating a detailed PC build recommendation using Google's Gemini API.
-  - Logging search queries to a CSV file for later review.
-
-- **.env.example**  
-  An example environment file listing the required API keys:
-  - `SERPER_API_KEY`: For the Serper.dev API.
-  - `GEMINI_API_KEY`: For Google Gemini API access.
-
-- **requirements.txt**  
-  Lists all required Python packages such as Streamlit, Requests, python-dotenv, google-generativeai, and Pandas.
-
-- **search_logs.csv**  
-  (Automatically generated) Logs user search details including timestamp, purpose, budget, and location.
+- **Templates:**
+  - Modern responsive design with dark theme
+  - Dashboard for user statistics
+  - Detailed search results page with component recommendations
 
 ## Installation
 
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/prtmsh/searchPC.git
+   git clone https://github.com/yourusername/searchPC.git
    cd searchPC
    ```
 
-2. **Create a Virtual Environment (Optional but Recommended):**
+2. **Create a Virtual Environment:**
 
    ```bash
    python -m venv venv
@@ -81,21 +73,43 @@ searchPC is a Streamlit-based web application designed to help users find and co
      GEMINI_API_KEY=your_gemini_api_key_here
      ```
 
-## Usage
-
-1. **Start the Streamlit Application:**
+5. **Run Database Migrations:**
 
    ```bash
-   streamlit run app.py
+   cd searchpc_project
+   python manage.py migrate
    ```
 
-2. **Interact with the App:**
+6. **Create a Superuser (Optional):**
 
-   - Enter your **budget** (in INR), select the **purpose** of your PC, and provide your **location**.
-   - Optionally select your preferred brands under advanced options.
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+## Usage
+
+1. **Start the Django Development Server:**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+2. **Access the Application:**
+
+   - Open a web browser and go to `http://127.0.0.1:8000/`
+   - Sign up for a new account or log in
+
+3. **Interact with the App:**
+
+   - Enter your **budget** (in INR), select the **purpose** of your PC, and provide your **location**
+   - Optionally select your preferred brands under advanced options
    - Click **Find PC Parts** to view:
-     - **AI Recommendation:** A detailed, budget-exact PC build generated by Gemini.
-     - **Part Recommendations:** A list of component options (CPU, GPU, etc.) sourced from live shopping data via Serper.dev.
+     - **AI Recommendation:** A detailed, budget-exact PC build generated by Gemini
+     - **Part Recommendations:** A list of component options (CPU, GPU, etc.) sourced from live shopping data via Serper.dev
+
+4. **View Your Dashboard:**
+   - See all your past searches
+   - View statistics about your search history
 
 ## API Keys
 
@@ -109,5 +123,6 @@ Ensure both keys are correctly set in the `.env` file.
 
 ## Acknowledgements
 
-- Built with [Streamlit](https://streamlit.io/).
-- Powered by the [Google Gemini API](https://ai.google.dev/) and [Serper.dev API](https://serper.dev/).
+- Built with [Django](https://www.djangoproject.com/)
+- Powered by the [Google Gemini API](https://ai.google.dev/) and [Serper.dev API](https://serper.dev/)
+- Frontend using [Bootstrap 5](https://getbootstrap.com/)
