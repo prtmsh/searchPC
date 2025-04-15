@@ -1,11 +1,39 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
 
 from .forms import PCSearchForm
+from .auth_forms import CustomUserCreationForm, CustomAuthenticationForm
 from .utils import validate_inputs, log_search, PCPartsFinder, parse_gemini_recommendation
 
-class HomeView(View):
+class SignUpView(CreateView):
+    """User registration view"""
+    template_name = 'pc_finder/signup.html'
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('login')
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Account created successfully! Please log in.")
+        return response
+
+class CustomLoginView(LoginView):
+    """User login view with custom form"""
+    template_name = 'pc_finder/login.html'
+    authentication_form = CustomAuthenticationForm
+    
+    def form_valid(self, form):
+        remember_me = self.request.POST.get('remember_me')
+        if not remember_me:
+            # Session expires when the user closes their browser
+            self.request.session.set_expiry(0)
+        return super().form_valid(form)
+
+class HomeView(LoginRequiredMixin, View):
     """Home page view with search form"""
     template_name = 'pc_finder/home.html'
     
@@ -41,7 +69,7 @@ class HomeView(View):
         
         return render(request, self.template_name, {'form': form})
 
-class ResultsView(View):
+class ResultsView(LoginRequiredMixin, View):
     """Results page view"""
     template_name = 'pc_finder/results.html'
     
@@ -58,7 +86,8 @@ class ResultsView(View):
             recommendations = parts_finder.get_part_recommendations(
                 search_params['purpose'],
                 search_params['budget'],
-                search_params['location']
+                search_params['location'],
+                search_params.get('preferred_brands', [])  # Pass preferred brands with empty list as default
             )
             
             # Parse components for better display

@@ -247,7 +247,7 @@ class PCPartsFinder:
         except requests.RequestException as e:
             return []
 
-    def get_part_recommendations(self, purpose: str, budget: float, location: str) -> Dict:
+    def get_part_recommendations(self, purpose: str, budget: float, location: str, preferred_brands: List[str] = None) -> Dict:
         """
         Generate comprehensive PC part recommendations.
         
@@ -255,12 +255,13 @@ class PCPartsFinder:
             purpose (str): Intended PC use
             budget (float): Total budget
             location (str): User's location
+            preferred_brands (List[str]): List of preferred brands
         
         Returns:
             Dict: Comprehensive part recommendations
         """
         # Get AI recommendation
-        ai_recommendation_text = get_gemini_recommendation(purpose, budget)
+        ai_recommendation_text = get_gemini_recommendation(purpose, budget, preferred_brands)
         
         # Parse the recommendation into component parts
         components = parse_gemini_recommendation(ai_recommendation_text)
