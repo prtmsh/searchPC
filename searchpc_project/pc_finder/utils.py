@@ -145,20 +145,29 @@ def parse_gemini_recommendation(recommendation_text: str) -> Dict[str, str]:
     
     # Regular expression patterns for each component
     patterns = {
-        'CPU': r'CPU:.*?([^-]+)(?=- Price:)',
-        'Motherboard': r'Motherboard:.*?([^-]+)(?=- Price:)',
-        'GPU': r'GPU:.*?([^-]+)(?=- Price:)',
-        'RAM': r'RAM:.*?([^-]+)(?=- Price:)',
-        'Storage': r'Storage:.*?([^-]+)(?=- Price:)',
-        'Power Supply': r'Power Supply:.*?([^-]+)(?=- Price:)',
-        'Cabinet': r'Cabinet:.*?([^-]+)(?=- Price:)'
+        'CPU': r'CPU:[\s]+(.*?)(?=[\s]*-[\s]*Price:)',
+        'Motherboard': r'Motherboard:[\s]+(.*?)(?=[\s]*-[\s]*Price:)',
+        'GPU': r'GPU:[\s]+(.*?)(?=[\s]*-[\s]*Price:)',
+        'RAM': r'RAM:[\s]+(.*?)(?=[\s]*-[\s]*Price:)',
+        'Storage': r'Storage:(?:[\s\*]*([^*\n].*?)(?=[\s]*-[\s]*Price:|[\s]*\*Rationale))',
+        'Power Supply': r'Power Supply:[\s]+(.*?)(?=[\s]*-[\s]*Price:)',
+        'Cabinet': r'Cabinet:[\s]+(.*?)(?=[\s]*-[\s]*Price:)'
     }
     
     for component, pattern in patterns.items():
-        match = re.search(pattern, recommendation_text, re.DOTALL)
+        match = re.search(pattern, recommendation_text, re.DOTALL | re.IGNORECASE)
         if match:
             # Extract the model name and clean it up
             model = match.group(1).strip()
+            # Handle special case for Storage which might include multiple items
+            if component == 'Storage' and '*' in recommendation_text:
+                # Extract the first storage item if multiple are listed with asterisks
+                storage_section = re.search(r'Storage:(.*?)(?=\d+\.\s|Power Supply:|Total)', recommendation_text, re.DOTALL)
+                if storage_section:
+                    storage_items = re.findall(r'\*\s+(.*?)(?=\s+-\s+Price:|\n)', storage_section.group(1), re.DOTALL)
+                    if storage_items:
+                        model = storage_items[0].strip()
+            
             components[component] = model
     
     return components
