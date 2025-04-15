@@ -41,7 +41,7 @@ searchPC is a Django-based web application designed to help users find and confi
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/searchPC.git
+   git clone https://github.com/prtmsh/searchPC.git
    cd searchPC
    ```
 
