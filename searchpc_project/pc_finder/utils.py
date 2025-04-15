@@ -172,7 +172,7 @@ def parse_gemini_recommendation(recommendation_text: str) -> Dict[str, str]:
     
     return components
 
-def log_search(purpose: str, budget: float, location: str):
+def log_search(purpose: str, budget: float, location: str, user=None):
     """
     Log user search to database
     
@@ -180,9 +180,11 @@ def log_search(purpose: str, budget: float, location: str):
         purpose (str): Intended use of PC
         budget (float): User's budget
         location (str): User's location
+        user: User object
     """
     try:
         SearchLog.objects.create(
+            user=user,
             purpose=purpose,
             budget=budget,
             location=location

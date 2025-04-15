@@ -47,6 +47,7 @@ class CustomUser(AbstractUser):
 
 class SearchLog(models.Model):
     """Model to store PC part search logs"""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='searches', null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     purpose = models.CharField(max_length=100)
     budget = models.DecimalField(max_digits=10, decimal_places=2)

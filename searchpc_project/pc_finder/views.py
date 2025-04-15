@@ -54,8 +54,8 @@ class HomeView(LoginRequiredMixin, View):
             
             # Validate inputs
             if validate_inputs(budget, purpose, location, request):
-                # Log the search
-                log_search(purpose, budget, location)
+                # Log the search with current user
+                log_search(purpose, budget, location, request.user)
                 
                 # Store the search parameters in session
                 request.session['search_params'] = {
@@ -116,15 +116,16 @@ class DashboardView(LoginRequiredMixin, ListView):
     ordering = ['-timestamp']
     
     def get_queryset(self):
-        # Filter search logs for current user (could be updated when user-specific logs are implemented)
-        return SearchLog.objects.all().order_by('-timestamp')[:20]  # Limit to recent 20 searches
+        # Filter search logs for current user only
+        return SearchLog.objects.filter(user=self.request.user).order_by('-timestamp')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['total_searches'] = SearchLog.objects.count()
+        user_searches = SearchLog.objects.filter(user=self.request.user)
+        context['total_searches'] = user_searches.count()
         
         # Get popular purposes and budgets for insights
-        purposes = SearchLog.objects.values_list('purpose', flat=True)
+        purposes = user_searches.values_list('purpose', flat=True)
         purpose_counts = {}
         for purpose in purposes:
             if purpose in purpose_counts:
@@ -138,7 +139,7 @@ class DashboardView(LoginRequiredMixin, ListView):
             context['popular_purpose'] = {'name': most_popular[0], 'count': most_popular[1]}
         
         # Calculate average budget
-        budgets = SearchLog.objects.values_list('budget', flat=True)
+        budgets = user_searches.values_list('budget', flat=True)
         if budgets:
             context['avg_budget'] = sum(budgets) / len(budgets)
         
