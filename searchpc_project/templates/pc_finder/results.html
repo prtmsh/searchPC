@@ -33,7 +33,7 @@
             {% endif %}
         </div>
         <div class="mt-3">
-            <a href="{% url 'home' %}" class="btn btn-outline-primary btn-sm w-100">
+            <a href="{% url 'home' %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
                 <i class="bi bi-arrow-left"></i> New Search
             </a>
         </div>
@@ -54,25 +54,18 @@
 
     <div class="card main-content mb-3">
         <div class="card-body p-3">
-            <div class="d-flex align-items-center mb-3">
-                <div class="bg-success bg-opacity-10 p-2 rounded-circle me-2">
-                    <i class="bi bi-check-circle text-success"></i>
-                </div>
-                <div>
-                    <h4 class="h5 mb-0">Build Recommendation</h4>
-                    <p class="text-muted small mb-0">Custom-tailored for your needs</p>
-                </div>
-            </div>
+            <h4 class="h5 mb-3">Build Recommendation</h4>
             
             <div class="mb-3">
                 <div class="card bg-dark">
                     <div class="card-body p-3">
-                        <pre class="mb-0">{{ ai_recommendation }}</pre>
+                        <pre class="mb-0 recommendation-text">{{ ai_recommendation }}</pre>
                     </div>
                 </div>
             </div>
             
             <h5 class="card-title h6 mb-2"><i class="bi bi-shop text-primary me-1"></i>Where to Buy Components</h5>
+            
             <div class="accordion" id="componentsAccordion">
                 {% for category, parts in part_recommendations.items %}
                 {% if parts %}

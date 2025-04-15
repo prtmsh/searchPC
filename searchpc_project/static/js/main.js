@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Add toast notification functionality
-    function showToast(message) {
+    function showToast(message, type = 'danger') {
         const toastContainer = document.getElementById('toast-container');
         if (!toastContainer) {
             // Create toast container if it doesn't exist
@@ -79,10 +79,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const toastId = 'toast-' + Date.now();
         const toastHTML = `
-        <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
-                    <i class="bi bi-exclamation-circle me-2"></i> ${message}
+                    <i class="bi bi-${type === 'danger' ? 'exclamation-circle' : 'check-circle'} me-2"></i> ${message}
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>

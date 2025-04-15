@@ -47,6 +47,7 @@
                         <span class="input-group-text"><i class="bi bi-gear"></i></span>
                         {% render_field form.purpose class="form-select" %}
                     </div>
+                    <div class="form-text small">Tell us what you'll primarily use this PC for</div>
                     {% if form.purpose.errors %}
                     <div class="text-danger small">
                         {{ form.purpose.errors }}
@@ -60,6 +61,7 @@
                         <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
                         {% render_field form.location class="form-control" %}
                     </div>
+                    <div class="form-text small">This helps us find components available in your region</div>
                     {% if form.location.errors %}
                     <div class="text-danger small">
                         {{ form.location.errors }}
@@ -87,12 +89,13 @@
                                 </div>
                                 {% endfor %}
                             </div>
+                            <div class="form-text small mt-2">Select any preferred brands for your components</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
                         <i class="bi bi-search"></i> Find PC Parts
                     </button>
                 </div>
@@ -105,25 +108,39 @@
             <div class="col-md-4">
                 <div class="feature-card">
                     <i class="bi bi-cpu-fill text-primary mb-2" style="font-size: 1.5rem;"></i>
-                    <h5 class="card-title h6">Expert Recommendations</h5>
-                    <p class="card-text small text-muted">AI-powered component selection for your needs.</p>
+                    <h5 class="card-title h6">AI Recommendations</h5>
+                    <p class="card-text small text-muted">Get intelligent component selection for your specific needs.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
                     <i class="bi bi-cash-stack text-primary mb-2" style="font-size: 1.5rem;"></i>
                     <h5 class="card-title h6">Budget Optimization</h5>
-                    <p class="card-text small text-muted">Maximum performance for your budget range.</p>
+                    <p class="card-text small text-muted">Maximize performance for your available budget range.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
                     <i class="bi bi-shop text-primary mb-2" style="font-size: 1.5rem;"></i>
                     <h5 class="card-title h6">Where to Buy</h5>
-                    <p class="card-text small text-muted">Find best prices for recommended components.</p>
+                    <p class="card-text small text-muted">Find the best prices for all recommended components.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add autofocus to first field for better UX
+        const firstInput = document.querySelector('#id_purpose');
+        if (firstInput) {
+            setTimeout(() => {
+                firstInput.focus();
+            }, 500);
+        }
+    });
+</script>
 {% endblock %}
