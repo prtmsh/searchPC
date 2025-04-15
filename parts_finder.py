@@ -2,7 +2,7 @@ import os
 import requests
 import streamlit as st
 from typing import List, Dict
-from utils import get_gemini_recommendation
+from utils import get_gemini_recommendation, parse_gemini_recommendation
 
 class PCPartsFinder:
     def __init__(self):
@@ -27,7 +27,7 @@ class PCPartsFinder:
         url = "https://google.serper.dev/shopping"
         
         payload = {
-            "q": query,
+            "q": query + " price India",  # Add pricing and location context
             "gl": "in",  # Default to India
             "hl": "en"
         }
@@ -73,25 +73,21 @@ class PCPartsFinder:
         Returns:
             Dict: Comprehensive part recommendations
         """
-        # Initial recommendation from Gemini
-        ai_recommendation = get_gemini_recommendation(purpose, budget)
+        # Get AI recommendation
+        ai_recommendation_text = get_gemini_recommendation(purpose, budget)
         
-        # Break down recommendation into specific part searches
-        part_categories = {
-            'CPU': f"{purpose} high-performance CPU",
-            'GPU': f"{purpose} graphics card",
-            'Motherboard': "Compatible motherboard",
-            'RAM': f"{purpose} RAM",
-            'Storage': f"{purpose} SSD"
-        }
+        # Parse the recommendation into component parts
+        components = parse_gemini_recommendation(ai_recommendation_text)
         
+        # Search for each specific component
         recommendations = {}
         
-        for category, search_query in part_categories.items():
-            results = self.search_pc_parts(search_query, location)
-            recommendations[category] = results
+        for category, model in components.items():
+            if model:  # Only search if we have a specific model
+                results = self.search_pc_parts(model, location)
+                recommendations[category] = results
         
         return {
-            'ai_recommendation': ai_recommendation,
+            'ai_recommendation': ai_recommendation_text,
             'part_recommendations': recommendations
         }

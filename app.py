@@ -1,6 +1,6 @@
 import streamlit as st
 from parts_finder import PCPartsFinder
-from utils import validate_inputs, log_search
+from utils import validate_inputs, log_search, parse_gemini_recommendation
 
 def main():
     """
@@ -72,20 +72,25 @@ def main():
                     st.success("PC Parts Recommendations Found!")
                     
                     # Display AI Recommendation
-                    st.subheader("🤖 AI Recommendation")
+                    st.subheader("🤖 Complete PC Build Recommendation")
                     st.write(recommendations['ai_recommendation'])
                     
+                    # Extract components from the recommendation for better display
+                    components = parse_gemini_recommendation(recommendations['ai_recommendation'])
+                    
                     # Display Part Recommendations
-                    st.subheader("🔍 Part Details")
+                    st.subheader("🔍 Where to Buy These Components")
+                    
                     for category, parts in recommendations['part_recommendations'].items():
-                        with st.expander(f"{category} Options"):
-                            for part in parts:
-                                st.markdown(f"""
-                                ### {part['title']}
-                                - **Price**: {part['price']}
-                                - **Source**: {part['source']}
-                                - [View Details]({part['link']})
-                                """)
+                        if parts:  # Only show categories with results
+                            with st.expander(f"{category}: {components.get(category, 'Not specified')}"):
+                                for part in parts:
+                                    st.markdown(f"""
+                                    ### {part['title']}
+                                    - **Price**: {part['price']}
+                                    - **Source**: {part['source']}
+                                    - [View Details]({part['link']})
+                                    """)
             
             except Exception as e:
                 st.error(f"An error occurred: {e}")

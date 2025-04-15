@@ -5,6 +5,7 @@ import streamlit as st
 from dotenv import load_dotenv
 import google.generativeai as genai
 import pandas as pd
+import re
 
 # Load environment variables
 load_dotenv()
@@ -106,6 +107,46 @@ Respond with a precise, comprehensive recommendation that fully utilizes the ent
     except Exception as e:
         st.error(f"Gemini API error: {e}")
         return "Unable to generate recommendations at this time."
+
+def parse_gemini_recommendation(recommendation_text: str) -> Dict[str, str]:
+    """
+    Parse the Gemini recommendation to extract specific component models.
+    
+    Args:
+        recommendation_text (str): The raw recommendation text from Gemini
+    
+    Returns:
+        Dict[str, str]: Dictionary of component categories and their specific models
+    """
+    components = {
+        'CPU': None,
+        'Motherboard': None,
+        'GPU': None,
+        'RAM': None,
+        'Storage': None,
+        'Power Supply': None,
+        'Cabinet': None
+    }
+    
+    # Regular expression patterns for each component
+    patterns = {
+        'CPU': r'CPU:.*?([^-]+)(?=- Price:)',
+        'Motherboard': r'Motherboard:.*?([^-]+)(?=- Price:)',
+        'GPU': r'GPU:.*?([^-]+)(?=- Price:)',
+        'RAM': r'RAM:.*?([^-]+)(?=- Price:)',
+        'Storage': r'Storage:.*?([^-]+)(?=- Price:)',
+        'Power Supply': r'Power Supply:.*?([^-]+)(?=- Price:)',
+        'Cabinet': r'Cabinet:.*?([^-]+)(?=- Price:)'
+    }
+    
+    for component, pattern in patterns.items():
+        match = re.search(pattern, recommendation_text, re.DOTALL)
+        if match:
+            # Extract the model name and clean it up
+            model = match.group(1).strip()
+            components[component] = model
+    
+    return components
 
 def log_search(purpose: str, budget: float, location: str):
     """
