@@ -3,11 +3,14 @@ import requests
 from typing import List, Dict
 import streamlit as st
 from dotenv import load_dotenv
-from openai import OpenAI
+import google.generativeai as genai
 import pandas as pd
 
 # Load environment variables
 load_dotenv()
+
+# Configure Gemini API
+genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
 def validate_inputs(budget: float, purpose: str, location: str) -> bool:
     """
@@ -35,9 +38,9 @@ def validate_inputs(budget: float, purpose: str, location: str) -> bool:
     
     return True
 
-def get_openai_recommendation(purpose: str, budget: float) -> str:
+def get_gemini_recommendation(purpose: str, budget: float) -> str:
     """
-    Use OpenAI to generate precise PC parts recommendation based on budget.
+    Use Gemini to generate precise PC parts recommendation based on budget.
     
     Args:
         purpose (str): Intended use of PC
@@ -47,9 +50,6 @@ def get_openai_recommendation(purpose: str, budget: float) -> str:
         str: Detailed recommendation string
     """
     try:
-        # Initialize OpenAI client with just the API key
-        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-        
         # Extremely detailed and precise prompt
         detailed_prompt = f"""
 You are a world-class PC parts consultant with 20+ years of experience, specializing in high-performance, budget-optimized builds for the Indian market. Your task is to provide a comprehensive recommendation for a complete PC build that uses exactly the full budget provided, with no underspending or overspending.
@@ -93,22 +93,18 @@ Total Spend: {budget} INR"
 
 Respond with a precise, comprehensive recommendation that fully utilizes the entire budget without any underspending.
 """
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are an expert PC parts consultant specialized in budget-optimized builds."},
-                {"role": "user", "content": detailed_prompt}
-            ],
-            max_tokens=500,
-            temperature=0.7
-        )
+        # Initialize Gemini model
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        # Generate response
+        response = model.generate_content(detailed_prompt)
         
         # Access the content 
-        recommendation = response.choices[0].message.content or "No recommendation generated."
+        recommendation = response.text
         
         return recommendation
     except Exception as e:
-        st.error(f"OpenAI API error: {e}")
+        st.error(f"Gemini API error: {e}")
         return "Unable to generate recommendations at this time."
 
 def log_search(purpose: str, budget: float, location: str):

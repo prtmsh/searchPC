@@ -2,7 +2,7 @@ import os
 import requests
 import streamlit as st
 from typing import List, Dict
-from utils import get_openai_recommendation
+from utils import get_gemini_recommendation
 
 class PCPartsFinder:
     def __init__(self):
@@ -73,8 +73,8 @@ class PCPartsFinder:
         Returns:
             Dict: Comprehensive part recommendations
         """
-        # Initial recommendation from OpenAI
-        ai_recommendation = get_openai_recommendation(purpose, budget)
+        # Initial recommendation from Gemini
+        ai_recommendation = get_gemini_recommendation(purpose, budget)
         
         # Break down recommendation into specific part searches
         part_categories = {
