@@ -34,16 +34,35 @@
         .component-card {
             margin-bottom: 15px;
         }
+        .auth-nav {
+            text-align: right;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container">
         <header class="mb-4">
-            <div class="row">
-                <div class="col">
+            <div class="row align-items-center">
+                <div class="col-md-8">
                     <h1 class="display-4">🖥️ PC Parts Finder</h1>
                     <p class="lead">Find the perfect PC components tailored to your needs!</p>
+                </div>
+                <div class="col-md-4 auth-nav">
+                    {% if user.is_authenticated %}
+                    <div class="d-flex justify-content-end align-items-center">
+                        <span class="me-3">Hello, {{ user.email }}</span>
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Log Out</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Log In</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <hr>
