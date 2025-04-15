@@ -246,6 +246,12 @@ pre {
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--light-text);
+  white-space: pre-wrap;       /* Allow text to wrap */
+  word-wrap: break-word;       /* Break long words if needed */
+  overflow-wrap: break-word;   /* Alternative to word-wrap */
+  overflow-x: hidden;          /* Hide horizontal scrollbar */
+  width: 100%;                 /* Ensure it takes full width of container */
+  max-width: 100%;             /* Prevent expanding beyond container */
 }
 
 /* Loading spinner */
