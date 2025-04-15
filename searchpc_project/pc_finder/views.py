@@ -58,7 +58,8 @@ class ResultsView(View):
             recommendations = parts_finder.get_part_recommendations(
                 search_params['purpose'],
                 search_params['budget'],
-                search_params['location']
+                search_params['location'],
+                search_params['preferred_brands']  # Pass preferred brands to the recommendation method
             )
             
             # Parse components for better display
